@@ -37,7 +37,32 @@ Opus 4.6 | 📂 …/Code/Projekt | ●●○○○○○○○○○○○○○
 
 ## Installation
 
-In `~/.claude/settings.json`:
+### 1. Script kopieren
+
+```bash
+# Verzeichnis anlegen
+mkdir -p ~/.claude/scripts/statusline
+
+# Script herunterladen
+curl -fsSL https://raw.githubusercontent.com/Internet-Marketing-Agentur/cc-statusline/main/statusline.sh \
+  -o ~/.claude/scripts/statusline/statusline.sh
+
+# Ausführbar machen
+chmod +x ~/.claude/scripts/statusline/statusline.sh
+```
+
+Alternativ per Git:
+
+```bash
+git clone https://github.com/Internet-Marketing-Agentur/cc-statusline.git /tmp/cc-statusline
+cp /tmp/cc-statusline/statusline.sh ~/.claude/scripts/statusline/statusline.sh
+chmod +x ~/.claude/scripts/statusline/statusline.sh
+rm -rf /tmp/cc-statusline
+```
+
+### 2. Claude Code konfigurieren
+
+In `~/.claude/settings.json` die Statusline aktivieren:
 
 ```json
 {
@@ -47,6 +72,10 @@ In `~/.claude/settings.json`:
   }
 }
 ```
+
+### 3. Claude Code neu starten
+
+Die Statusline erscheint nach dem nächsten Start von Claude Code automatisch am unteren Terminalrand.
 
 ## Konfiguration
 
@@ -63,6 +92,13 @@ COLOR="blue"  # gray, orange, blue, teal, green, lavender, rose, gold, slate, cy
 - GNU coreutils (`stat -c`, `date -d`) mit BSD-Fallback
 - macOS Keychain (hex-kodierter Blob) + `CLAUDE_CODE_OAUTH_TOKEN` Env-Variable
 - Usage-Daten werden 60 Sekunden in `/tmp/claude/statusline-usage-cache.json` gecacht
+
+## Update
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Internet-Marketing-Agentur/cc-statusline/main/statusline.sh \
+  -o ~/.claude/scripts/statusline/statusline.sh
+```
 
 ## Inspiration
 
