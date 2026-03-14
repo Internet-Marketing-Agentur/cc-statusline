@@ -180,7 +180,6 @@ get_oauth_token() {
     if command -v security >/dev/null 2>&1; then
         local token
         token=$(security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null \
-            | xxd -r -p \
             | grep -oE '"accessToken":"[^"]+"' \
             | head -1 \
             | sed 's/"accessToken":"//;s/"$//')
