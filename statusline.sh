@@ -114,7 +114,7 @@ fi
 # Color: green <50%, yellow 50-69%, orange 70-89%, red 90%+
 build_usage_bar() {
     local pct=$1
-    local width=6
+    local width=10
     [[ $pct -lt 0 ]] && pct=0
     [[ $pct -gt 100 ]] && pct=100
 
@@ -170,8 +170,9 @@ format_reset_time() {
 }
 
 # Get OAuth token from macOS Keychain
-# The keychain blob is hex-encoded with a leading control byte,
-# so we decode and extract the token via regex instead of jq.
+# Extract the Claude AI OAuth token from macOS Keychain.
+# The keychain stores multiple OAuth entries (Claude, MCP servers like ClickUp).
+# We specifically extract from .claudeAiOauth to avoid grabbing the wrong token.
 get_oauth_token() {
     if [[ -n "$CLAUDE_CODE_OAUTH_TOKEN" ]]; then
         echo "$CLAUDE_CODE_OAUTH_TOKEN"
@@ -180,9 +181,7 @@ get_oauth_token() {
     if command -v security >/dev/null 2>&1; then
         local token
         token=$(security find-generic-password -s "Claude Code-credentials" -w 2>/dev/null \
-            | grep -oE '"accessToken":"[^"]+"' \
-            | head -1 \
-            | sed 's/"accessToken":"//;s/"$//')
+            | python3 -c "import sys,json; d=json.loads(sys.stdin.read()); print(d.get('claudeAiOauth',{}).get('accessToken',''))" 2>/dev/null)
         if [[ -n "$token" ]]; then
             echo "$token"
             return 0
@@ -218,7 +217,7 @@ if $needs_refresh; then
             -H "Authorization: Bearer $token" \
             -H "anthropic-beta: oauth-2025-04-20" \
             "https://api.anthropic.com/api/oauth/usage" 2>/dev/null)
-        if [[ -n "$response" ]] && echo "$response" | jq . >/dev/null 2>&1; then
+        if [[ -n "$response" ]] && echo "$response" | jq -e '.five_hour' >/dev/null 2>&1; then
             usage_data="$response"
             echo "$response" > "$cache_file"
         fi
