@@ -250,9 +250,28 @@ if [[ -n "$usage_data" ]] && echo "$usage_data" | jq -e . >/dev/null 2>&1; then
     [[ -n "$seven_reset" ]] && usage_info+=" ${C_BAR_EMPTY}@${seven_reset}${C_RESET}"
 fi
 
-# Build output: Model | Directory | Context | Git | 5h | 7d
+# ===== Project time tracking =====
+time_info=""
+if [[ -n "$dir" && "$dir" != "?" ]]; then
+    total_file="$HOME/.claude/time-tracking/${dir}.total"
+    if [[ -f "$total_file" ]]; then
+        total_secs=$(cat "$total_file" 2>/dev/null || echo 0)
+        if [[ $total_secs -gt 0 ]]; then
+            t_hours=$((total_secs / 3600))
+            t_mins=$(( (total_secs % 3600) / 60 ))
+            if [[ $t_hours -gt 0 ]]; then
+                time_info="⏱ ${t_hours}h ${t_mins}m"
+            else
+                time_info="⏱ ${t_mins}m"
+            fi
+        fi
+    fi
+fi
+
+# Build output: Model | Directory | Context | Git | Time | 5h | 7d
 output="${C_ACCENT}${model}${C_GRAY}"
 [[ -n "$short_path" ]] && output+=" | 📂 ${short_path}"
+[[ -n "$time_info" ]] && output+=" | ${C_ACCENT}${time_info}${C_RESET}"
 output+=" | ${ctx}"
 [[ -n "$git_info" ]] && output+=" | ${C_GRAY}${git_info}"
 output+="${usage_info}"
