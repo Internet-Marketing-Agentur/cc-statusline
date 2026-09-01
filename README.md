@@ -92,6 +92,9 @@ COLOR="blue"  # gray, orange, blue, teal, green, lavender, rose, gold, slate, cy
 - GNU coreutils (`stat -c`, `date -d`) mit BSD-Fallback
 - macOS Keychain (hex-kodierter Blob) + `CLAUDE_CODE_OAUTH_TOKEN` Env-Variable
 - Usage-Daten werden 60 Sekunden in `/tmp/claude/statusline-usage-cache.json` gecacht
+- Der Zeitstempel des Caches wird **vor** der Anfrage gesetzt: Bei vielen parallelen
+  Sessions oder einer Fehlerantwort (HTTP 429) geht so höchstens ein Request pro
+  Minute raus, statt bei jedem Rendering erneut
 
 ## Update
 

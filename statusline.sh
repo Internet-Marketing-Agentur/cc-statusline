@@ -209,6 +209,9 @@ if [[ -f "$cache_file" ]]; then
 fi
 
 if $needs_refresh; then
+    # Zeitstempel vor der Anfrage setzen: sonst feuern parallele
+    # Sessions und Fehlerantworten bei jedem Rendering erneut.
+    [[ -f "$cache_file" ]] && touch "$cache_file" 2>/dev/null
     token=$(get_oauth_token)
     if [[ -n "$token" && "$token" != "null" ]]; then
         response=$(curl -s --max-time 5 \
